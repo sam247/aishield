@@ -1,0 +1,26 @@
+[
+  {
+    "id": "CORS-misconfig",
+    "name": "Overly permissive CORS policy",
+    "severity": "medium",
+    "matchedAt": "https://example.com/api",
+    "description": "The API allows '*' origin which can leak sensitive data to any website.",
+    "tags": ["cors", "web", "misconfig"]
+  },
+  {
+    "id": "no-hsts",
+    "name": "Missing HSTS header",
+    "severity": "low",
+    "matchedAt": "https://example.com/",
+    "description": "The site does not send the Strict-Transport-Security header, reducing HTTPS hardening.",
+    "tags": ["headers", "tls"]
+  },
+  {
+    "id": "exposed-debug",
+    "name": "Exposed debug endpoint",
+    "severity": "high",
+    "matchedAt": "https://example.com/api/debug",
+    "description": "A debug endpoint is accessible publicly. It may expose internal information.",
+    "tags": ["debug", "info-disclosure"]
+  }
+]
