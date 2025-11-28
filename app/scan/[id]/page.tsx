@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import type { Scan } from "../../../lib/types";
 
@@ -18,49 +18,99 @@ export default function ScanPage() {
   const [scan, setScan] = useState<Scan | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const scanStatusRef = useRef<Scan["status"] | null>(null);
 
   useEffect(() => {
     let intervalId: NodeJS.Timeout | null = null;
+    let isMounted = true;
 
     async function fetchScan() {
+      if (!isMounted) return;
+      
+      // Don't poll if scan is already complete or error
+      if (scanStatusRef.current === "complete" || scanStatusRef.current === "error") {
+        if (intervalId) {
+          clearInterval(intervalId);
+          intervalId = null;
+        }
+        return;
+      }
+      
       try {
-        const res = await fetch(`/api/scan/${id}`);
+        const res = await fetch(`/api/scan/${id}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          cache: "no-store", // Prevent Safari caching issues
+        });
         if (!res.ok) {
-          const data = await res.json();
+          // Handle 404 gracefully (scan might have expired on serverless)
+          if (res.status === 404) {
+            if (isMounted) {
+              setError("Scan not found. It may have expired. Please start a new scan.");
+              setLoading(false);
+            }
+            // Stop polling on 404
+            if (intervalId) {
+              clearInterval(intervalId);
+              intervalId = null;
+            }
+            return;
+          }
+          const data = await res.json().catch(() => ({}));
           throw new Error(data.error || "Failed to load scan");
         }
         const data = (await res.json()) as Scan;
+        
+        if (!isMounted) return;
+        
+        scanStatusRef.current = data.status;
         setScan(data);
         setLoading(false);
 
-        // Poll every 2 seconds if scan is still in progress
-        if (data.status === "pending" || data.status === "running") {
-          intervalId = setInterval(fetchScan, 2000);
-        } else {
-          // Stop polling if complete or error
+        // Stop polling if scan is complete or error
+        if (data.status === "complete" || data.status === "error") {
           if (intervalId) {
             clearInterval(intervalId);
             intervalId = null;
           }
         }
       } catch (err) {
-        console.error(err);
-        setError(err instanceof Error ? err.message : "Unexpected error");
-        setLoading(false);
-        if (intervalId) {
-          clearInterval(intervalId);
+        if (!isMounted) return;
+        // Don't set error on network failures during polling - just log
+        if (scanStatusRef.current === "pending" || scanStatusRef.current === "running") {
+          // Only log, don't show error to user during active polling
+          console.warn("Polling error:", err);
+        } else {
+          setError(err instanceof Error ? err.message : "Unexpected error");
+          setLoading(false);
+          if (intervalId) {
+            clearInterval(intervalId);
+            intervalId = null;
+          }
         }
       }
     }
 
+    // Initial fetch
     fetchScan();
 
+    // Set up polling interval
+    intervalId = setInterval(() => {
+      if (isMounted) {
+        fetchScan();
+      }
+    }, 2000);
+
     return () => {
+      isMounted = false;
       if (intervalId) {
         clearInterval(intervalId);
+        intervalId = null;
       }
     };
-  }, [id]);
+  }, [id]); // Only depend on id
 
   if (loading) {
     return (

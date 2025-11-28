@@ -26,6 +26,7 @@ export default function HomePage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ url }),
+        cache: "no-store", // Prevent Safari caching issues
       });
 
       if (!res.ok) {
