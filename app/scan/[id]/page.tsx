@@ -5,10 +5,10 @@ import { useParams, useRouter } from "next/navigation";
 import type { Scan } from "../../../lib/types";
 
 const statusStyles: Record<Scan["status"], string> = {
-  pending: "bg-amber-100 text-amber-800",
-  running: "bg-blue-100 text-blue-800",
-  complete: "bg-emerald-100 text-emerald-800",
-  error: "bg-red-100 text-red-800",
+  pending: "bg-amber-900/30 text-amber-400 border border-amber-800/50",
+  running: "bg-blue-900/30 text-blue-400 border border-blue-800/50",
+  complete: "bg-emerald-900/30 text-emerald-400 border border-emerald-800/50",
+  error: "bg-red-900/30 text-red-400 border border-red-800/50",
 };
 
 export default function ScanPage() {
@@ -63,21 +63,33 @@ export default function ScanPage() {
   }, [id]);
 
   if (loading) {
-    return <p className="text-slate-600">Loading scan...</p>;
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <p className="text-gray-400">Loading scan...</p>
+      </div>
+    );
   }
 
   if (error) {
-    return <p className="text-red-600">{error}</p>;
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <p className="text-red-400">{error}</p>
+      </div>
+    );
   }
 
   if (!scan) {
-    return <p className="text-slate-600">Scan not found.</p>;
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <p className="text-gray-400">Scan not found.</p>
+      </div>
+    );
   }
 
   // Calculate overall risk from findings
   const getOverallRisk = (findings: Scan["findings"]): { level: "Critical" | "High" | "Medium" | "Low" | "None"; color: string } => {
     if (findings.length === 0) {
-      return { level: "None", color: "bg-slate-500" };
+      return { level: "None", color: "bg-gray-700" };
     }
     const hasCritical = findings.some(f => f.severity === "critical");
     const hasHigh = findings.some(f => f.severity === "high");
@@ -87,8 +99,8 @@ export default function ScanPage() {
     if (hasCritical) return { level: "Critical", color: "bg-red-600" };
     if (hasHigh) return { level: "High", color: "bg-orange-500" };
     if (hasMedium) return { level: "Medium", color: "bg-amber-500" };
-    if (hasLow) return { level: "Low", color: "bg-sky-500" };
-    return { level: "None", color: "bg-slate-500" };
+    if (hasLow) return { level: "Low", color: "bg-blue-500" };
+    return { level: "None", color: "bg-gray-700" };
   };
 
   // Group findings by severity
@@ -122,7 +134,7 @@ export default function ScanPage() {
       if (part.startsWith("##")) {
         const headingText = part.replace(/^##\s+/, "");
         elements.push(
-          <h3 key={i} className="text-lg font-semibold text-slate-900 mt-4 mb-2 first:mt-0">
+          <h3 key={i} className="text-lg font-semibold text-white mt-4 mb-2 first:mt-0">
             {headingText}
           </h3>
         );
@@ -130,7 +142,7 @@ export default function ScanPage() {
         // Regular text - preserve line breaks
         const lines = part.split("\n").filter(line => line.trim());
         elements.push(
-          <div key={i} className="text-slate-700 leading-relaxed space-y-1">
+          <div key={i} className="text-gray-300 leading-relaxed space-y-1">
             {lines.map((line, idx) => (
               <p key={idx}>{line}</p>
             ))}
@@ -139,7 +151,7 @@ export default function ScanPage() {
       }
     }
     
-    return elements.length > 0 ? elements : <p className="text-slate-700 leading-relaxed">{summary}</p>;
+    return elements.length > 0 ? elements : <p className="text-gray-300 leading-relaxed">{summary}</p>;
   };
 
   const overallRisk = scan.status === "complete" ? getOverallRisk(scan.findings) : null;
@@ -157,36 +169,37 @@ export default function ScanPage() {
   const isAISummary = scan.aiSummary && (scan.aiSummary.includes("##") || scan.aiSummary.includes("Summary") || scan.aiSummary.includes("Risk"));
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-          <div className="flex-1">
-            <p className="text-sm uppercase tracking-wide text-slate-500">Target URL</p>
-            <p className="text-lg font-semibold text-slate-900 break-all">{scan.url}</p>
-          </div>
-          <div className="flex items-center gap-2 flex-wrap">
-            {overallRisk && (
-              <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold uppercase text-white ${overallRisk.color}`}>
-                Overall risk: {overallRisk.level}
+    <div className="min-h-screen bg-black">
+      <div className="max-w-4xl mx-auto px-6 py-10 space-y-6">
+        <div className="rounded-2xl border border-gray-800 bg-gray-900 p-6">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div className="flex-1">
+              <p className="text-sm uppercase tracking-wide text-gray-500">Target URL</p>
+              <p className="text-lg font-semibold text-white break-all">{scan.url}</p>
+            </div>
+            <div className="flex items-center gap-2 flex-wrap">
+              {overallRisk && (
+                <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold uppercase text-white ${overallRisk.color}`}>
+                  Overall risk: {overallRisk.level}
+                </span>
+              )}
+              <span className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-medium ${statusStyles[scan.status]}`}>
+                {scan.status}
               </span>
-            )}
-            <span className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-medium ${statusStyles[scan.status]}`}>
-              {scan.status}
-            </span>
+            </div>
           </div>
+          <p className="mt-3 text-sm text-gray-500">
+            Created {new Date(scan.createdAt).toLocaleString()} • Updated {new Date(scan.updatedAt).toLocaleString()}
+          </p>
         </div>
-        <p className="mt-3 text-sm text-slate-500">
-          Created {new Date(scan.createdAt).toLocaleString()} • Updated {new Date(scan.updatedAt).toLocaleString()}
-        </p>
-      </div>
 
       {scan.status === "pending" || scan.status === "running" ? (
-        <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-6 text-slate-700">
+        <div className="rounded-xl border border-dashed border-gray-800 bg-gray-900 p-6 text-gray-300">
           <div className="flex items-center gap-3">
-            <div className="h-5 w-5 animate-spin rounded-full border-2 border-slate-400 border-t-transparent"></div>
+            <div className="h-5 w-5 animate-spin rounded-full border-2 border-gray-600 border-t-white"></div>
             <div>
-              <p className="font-medium">Scan in progress...</p>
-              <p className="text-sm text-slate-600 mt-1">
+              <p className="font-medium text-white">Scan in progress...</p>
+              <p className="text-sm text-gray-400 mt-1">
                 Running scan… this usually takes 10–60 seconds.
               </p>
             </div>
@@ -194,12 +207,12 @@ export default function ScanPage() {
         </div>
       ) : scan.status === "error" ? (
         <>
-          <div className="rounded-xl border border-red-200 bg-red-50 p-6 text-red-800">
-            <p className="font-semibold mb-2">Scan failed</p>
+          <div className="rounded-xl border border-red-800/50 bg-red-900/20 p-6 text-red-400">
+            <p className="font-semibold mb-2 text-white">Scan failed</p>
             <p className="text-sm mb-4">{scan.errorMessage || "An unknown error occurred."}</p>
             <button
               onClick={() => router.push("/")}
-              className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+              className="rounded-lg bg-white text-black px-4 py-2 text-sm font-medium hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400 transition-colors"
             >
               Try again
             </button>
@@ -207,29 +220,29 @@ export default function ScanPage() {
         </>
       ) : (
         <>
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 className="text-xl font-semibold text-slate-900 mb-4">
+          <div className="rounded-2xl border border-gray-800 bg-gray-900 p-6">
+            <h2 className="text-xl font-semibold text-white mb-4">
               {isAISummary ? "AI Security Summary" : "Summary (non-AI)"}
             </h2>
-            <div className="rounded-lg bg-slate-50 p-5 border border-slate-200">
+            <div className="rounded-lg bg-black p-5 border border-gray-800">
               {scan.aiSummary ? (
                 <div className="space-y-3">
                   {formatAISummary(scan.aiSummary)}
                 </div>
               ) : (
-                <p className="text-slate-700 leading-relaxed">No summary available.</p>
+                <p className="text-gray-300 leading-relaxed">No summary available.</p>
               )}
             </div>
           </div>
 
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="rounded-2xl border border-gray-800 bg-gray-900 p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold text-slate-900">Findings</h2>
-              <span className="text-sm text-slate-500">{scan.findings.length} {scan.findings.length === 1 ? "issue" : "issues"}</span>
+              <h2 className="text-xl font-semibold text-white">Findings</h2>
+              <span className="text-sm text-gray-400">{scan.findings.length} {scan.findings.length === 1 ? "issue" : "issues"}</span>
             </div>
             {scan.findings.length === 0 ? (
-              <div className="mt-4 rounded-lg border border-slate-200 bg-slate-50 p-6 text-center text-slate-600">
-                <p className="font-medium">No security issues detected</p>
+              <div className="mt-4 rounded-lg border border-gray-800 bg-black p-6 text-center text-gray-400">
+                <p className="font-medium text-white">No security issues detected</p>
                 <p className="text-sm mt-1">The scan completed successfully with no findings.</p>
               </div>
             ) : (
@@ -240,19 +253,19 @@ export default function ScanPage() {
                   
                   return (
                     <div key={severity} className="space-y-3">
-                      <h3 className="text-base font-semibold text-slate-900">
+                      <h3 className="text-base font-semibold text-white">
                         {severityLabels[severity]} ({findings.length})
                       </h3>
                       <div className="space-y-3">
                         {findings.map((finding) => (
                           <div
                             key={finding.id}
-                            className="rounded-lg border border-slate-200 p-4 hover:border-slate-300 transition-colors"
+                            className="rounded-lg border border-gray-800 bg-black p-4 hover:border-gray-700 transition-colors"
                           >
                             <div className="flex flex-wrap items-start justify-between gap-3">
                               <div className="flex-1 space-y-1 min-w-0">
-                                <p className="text-base font-semibold text-slate-900">{finding.name}</p>
-                                <p className="text-xs text-slate-500 font-mono break-all">{finding.matchedAt}</p>
+                                <p className="text-base font-semibold text-white">{finding.name}</p>
+                                <p className="text-xs text-gray-500 font-mono break-all">{finding.matchedAt}</p>
                               </div>
                               <span
                                 className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold uppercase text-white shrink-0 ${severityColor(
@@ -263,14 +276,14 @@ export default function ScanPage() {
                               </span>
                             </div>
                             {finding.description && (
-                              <p className="mt-3 text-sm text-slate-700 leading-relaxed">{finding.description}</p>
+                              <p className="mt-3 text-sm text-gray-300 leading-relaxed">{finding.description}</p>
                             )}
                             {finding.tags?.length ? (
                               <div className="mt-3 flex flex-wrap gap-2">
                                 {finding.tags.map((tag) => (
                                   <span
                                     key={tag}
-                                    className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-700"
+                                    className="inline-flex items-center rounded-full bg-gray-800 px-2.5 py-0.5 text-xs font-medium text-gray-300 border border-gray-700"
                                   >
                                     {tag}
                                   </span>
@@ -288,6 +301,7 @@ export default function ScanPage() {
           </div>
         </>
       )}
+      </div>
     </div>
   );
 }
@@ -301,8 +315,8 @@ function severityColor(severity: Scan["findings"][number]["severity"]) {
     case "medium":
       return "bg-amber-500";
     case "low":
-      return "bg-sky-500";
+      return "bg-blue-500";
     default:
-      return "bg-slate-500";
+      return "bg-gray-600";
   }
 }

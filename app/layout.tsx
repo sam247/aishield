@@ -15,16 +15,21 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <div className="min-h-screen">
-          <header className="border-b border-slate-200 bg-white">
-            <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
-              <Link href="/" className="text-xl font-semibold text-slate-900">
-                aishield <span className="text-xs text-slate-500">(v1)</span>
+        <div className="min-h-screen bg-black">
+          <header className="bg-black border-b border-gray-800">
+            <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+              <Link href="/" className="text-xl font-semibold text-white flex items-center gap-2">
+                <span className="text-2xl">🛡️</span>
+                <span>aishield</span>
               </Link>
-              <span className="text-sm text-slate-500">AI-assisted security scanner</span>
+              <button className="text-white p-2 hover:bg-gray-900 rounded-lg transition-colors">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </button>
             </div>
           </header>
-          <main className="mx-auto max-w-5xl px-6 py-10">{children}</main>
+          <main className="bg-black">{children}</main>
         </div>
       </body>
     </html>

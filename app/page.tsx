@@ -44,70 +44,86 @@ export default function HomePage() {
   }
 
   return (
-    <div className="space-y-12">
-      <div className="grid gap-8 md:grid-cols-2 md:items-center">
-        <div className="space-y-4">
-          <h1 className="text-3xl font-semibold leading-tight text-slate-900 md:text-4xl">
-            AI-assisted security scan for modern web apps.
+    <div className="min-h-screen bg-black">
+      {/* Hero Section */}
+      <div className="mx-auto max-w-7xl px-6 py-20 md:py-32">
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gray-900 border border-gray-800 mb-8">
+            <span className="text-xs text-gray-400">Backed by</span>
+            <span className="text-xs font-semibold text-white">Y Combinator</span>
+          </div>
+          
+          <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
+            Web Apps Get Hacked.<br />
+            AIShield Protects.
           </h1>
-          <p className="text-slate-600 text-lg">
-            Paste your URL. We run focused checks and explain the issues in plain English. Built for Next.js, Vercel, Supabase and AI-built apps.
+          
+          <p className="text-xl text-gray-400 max-w-2xl mx-auto mb-10 leading-relaxed">
+            AIShield is an AI-powered security scanner that finds vulnerabilities and explains them in plain English. Built for Next.js, Vercel, Supabase and modern web apps.
           </p>
         </div>
 
-        <div className="rounded-2xl bg-white p-6 shadow-sm border border-slate-200">
-          <form className="space-y-4" onSubmit={handleSubmit}>
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-700" htmlFor="url">
-                Target URL
-              </label>
-              <input
-                id="url"
-                type="url"
-                required
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
-                placeholder="https://example.com"
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
-              />
-            </div>
-            {error && <p className="text-sm text-red-600">{error}</p>}
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full rounded-lg bg-indigo-600 px-4 py-2 text-white font-semibold shadow hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-300 disabled:cursor-not-allowed disabled:bg-indigo-300"
-            >
-              {loading ? "Starting scan..." : "Run scan"}
-            </button>
-          </form>
-          <p className="mt-4 text-xs text-slate-500 text-center">
-            Only scan apps you own or have permission to test.
-          </p>
+        {/* Form Section */}
+        <div className="max-w-2xl mx-auto">
+          <div className="rounded-2xl bg-gray-900 border border-gray-800 p-8">
+            <form className="space-y-6" onSubmit={handleSubmit}>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-300" htmlFor="url">
+                  Target URL
+                </label>
+                <input
+                  id="url"
+                  type="url"
+                  required
+                  value={url}
+                  onChange={(e) => setUrl(e.target.value)}
+                  placeholder="https://example.com"
+                  className="w-full rounded-lg bg-black border border-gray-800 px-4 py-3 text-white placeholder-gray-500 focus:border-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-700 transition-colors"
+                />
+              </div>
+              {error && (
+                <div className="rounded-lg bg-red-900/20 border border-red-800/50 p-3">
+                  <p className="text-sm text-red-400">{error}</p>
+                </div>
+              )}
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full rounded-lg bg-white text-black px-6 py-3 font-semibold hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-white transition-colors"
+              >
+                {loading ? "Starting scan..." : "Get Started"}
+              </button>
+            </form>
+            <p className="mt-6 text-xs text-gray-500 text-center">
+              Only scan apps you own or have permission to test.
+            </p>
+          </div>
         </div>
-      </div>
 
-      <div className="border-t border-slate-200 pt-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-3xl mx-auto">
-          <div className="text-center space-y-2">
-            <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 font-semibold text-lg">
-              1
+        {/* Steps Section */}
+        <div className="mt-20 max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="text-center space-y-3">
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gray-900 border border-gray-800 text-white font-semibold text-lg">
+                1
+              </div>
+              <p className="font-semibold text-white text-lg">Enter your URL</p>
+              <p className="text-sm text-gray-400">Paste the URL of your web app</p>
             </div>
-            <p className="font-medium text-slate-900">Enter your URL</p>
-            <p className="text-sm text-slate-600">Paste the URL of your web app</p>
-          </div>
-          <div className="text-center space-y-2">
-            <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 font-semibold text-lg">
-              2
+            <div className="text-center space-y-3">
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gray-900 border border-gray-800 text-white font-semibold text-lg">
+                2
+              </div>
+              <p className="font-semibold text-white text-lg">We run automated checks</p>
+              <p className="text-sm text-gray-400">Security scan completes in 10–60 seconds</p>
             </div>
-            <p className="font-medium text-slate-900">We run automated checks</p>
-            <p className="text-sm text-slate-600">Security scan completes in 10–60 seconds</p>
-          </div>
-          <div className="text-center space-y-2">
-            <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 font-semibold text-lg">
-              3
+            <div className="text-center space-y-3">
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gray-900 border border-gray-800 text-white font-semibold text-lg">
+                3
+              </div>
+              <p className="font-semibold text-white text-lg">You get an AI summary + fix list</p>
+              <p className="text-sm text-gray-400">Actionable recommendations in plain English</p>
             </div>
-            <p className="font-medium text-slate-900">You get an AI summary + fix list</p>
-            <p className="text-sm text-slate-600">Actionable recommendations in plain English</p>
           </div>
         </div>
       </div>
