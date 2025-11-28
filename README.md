@@ -78,6 +78,65 @@ The app is ready for Vercel deployment:
 
 **Note:** Real Nuclei scans require Nuclei CLI to be installed on the server. On standard Vercel deployments, this is not available, so scans will automatically use mock mode.
 
+## Privacy & Data Handling
+
+AIShield is designed with **privacy-first principles** and is suitable for compliance-aware environments.
+
+### Data Collection & Storage
+
+- **Ephemeral by Default:** All scan data is stored **in-memory only** (no persistent storage)
+- **No Database:** No database is used — data exists only during the scan session
+- **No File Storage:** No scan data is written to disk
+- **No Logging:** No persistent log files are created
+- **Automatic Disposal:** Data is automatically destroyed when:
+  - The scan completes
+  - The server restarts
+  - The serverless function completes (on platforms like Vercel)
+
+### What We Collect
+
+- Scan metadata (ID, URL, status, timestamps)
+- Security findings (vulnerability details)
+- AI-generated summaries (if enabled)
+
+### What We Do NOT Collect
+
+- ❌ Raw HTTP request/response bodies
+- ❌ Request headers or authentication tokens
+- ❌ Source code or file contents
+- ❌ User credentials or personal information
+- ❌ Network traffic or packet data
+
+### Data Export
+
+- Results are **not automatically saved**
+- Users must **explicitly export** results if they want to retain them
+- Export functionality (if implemented) generates files on-demand
+- No exported data is stored on the server
+
+### Compliance Alignment
+
+This privacy-first approach aligns with:
+- **ISO 27001** (Information security management)
+- **GDPR** (Data minimization and storage limitation)
+- **Data minimization principles** (only essential data collected)
+
+### Documentation
+
+For detailed information, see:
+- **[DATA_HANDLING.md](./DATA_HANDLING.md)** — Complete data handling policy
+- **[RETENTION_POLICY.md](./RETENTION_POLICY.md)** — Detailed retention and disposal policy
+
+### Why This Matters
+
+**Data Minimization:** By storing only essential scan results in memory, AIShield minimizes data exposure and reduces compliance burden.
+
+**Secure Disposal:** Automatic in-memory disposal ensures data cannot be recovered after process termination, aligning with secure disposal best practices.
+
+**Privacy by Design:** The ephemeral storage model means no data retention policies, backup procedures, or data breach notification requirements for scan data.
+
+**Compliance-Friendly:** Suitable for organizations requiring compliance with ISO 27001, GDPR, and other data protection frameworks.
+
 ## Notes
 - All scan data is ephemeral and stored in memory (lost on server restart)
 - No authentication or billing - suitable for local development and demos

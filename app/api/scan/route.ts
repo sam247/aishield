@@ -30,6 +30,8 @@ export async function POST(request: Request) {
     const scan = createScan(url);
 
     // Start async scan job (fire and forget)
+    // Note: Scan data is stored in-memory only (ephemeral)
+    // See DATA_HANDLING.md for privacy and retention details
     (async () => {
       try {
         scan.status = "running";

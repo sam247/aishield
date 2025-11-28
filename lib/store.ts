@@ -1,5 +1,19 @@
 import { Scan } from "./types";
 
+/**
+ * In-memory storage for scan data.
+ * 
+ * PRIVACY & DATA HANDLING:
+ * - All data is stored in-memory only (ephemeral)
+ * - Data is automatically destroyed when:
+ *   - Server restarts
+ *   - Process terminates
+ *   - Serverless function completes
+ * - No persistent storage (no database, no files, no logs)
+ * - No data is retained beyond the scan session
+ * 
+ * See DATA_HANDLING.md and RETENTION_POLICY.md for details.
+ */
 const scans = new Map<string, Scan>();
 
 export function createScan(url: string): Scan {

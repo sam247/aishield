@@ -47,7 +47,8 @@ export async function runRealScan(url: string): Promise<NucleiFinding[]> {
   ].join(" ");
 
   try {
-    console.log(`[scanner] Running real Nuclei scan for ${url}`);
+    // Note: URL logging is non-persistent (console.log only, not written to disk)
+    console.log(`[scanner] Running real Nuclei scan`);
     const { stdout, stderr } = await execAsync(command, {
       timeout,
       maxBuffer: 10 * 1024 * 1024, // 10MB buffer
@@ -61,7 +62,7 @@ export async function runRealScan(url: string): Promise<NucleiFinding[]> {
     const lines = stdout.trim().split("\n").filter((line) => line.trim());
     
     if (lines.length === 0) {
-      console.log(`[scanner] No findings for ${url}`);
+      console.log(`[scanner] No findings detected`);
       return [];
     }
 
@@ -89,7 +90,7 @@ export async function runRealScan(url: string): Promise<NucleiFinding[]> {
       }
     }
 
-    console.log(`[scanner] Found ${findings.length} issues for ${url}`);
+    console.log(`[scanner] Found ${findings.length} issues`);
     return findings;
   } catch (error: any) {
     if (error.code === "ENOENT") {
